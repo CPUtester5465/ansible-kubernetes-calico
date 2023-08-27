@@ -1,18 +1,29 @@
 # ansible-kubernetes-calico
-*ON MASTER*
 
+This repository contains Ansible scripts and playbooks for setting up a Kubernetes cluster with Calico networking. The provided scripts simplify the deployment process by automating various tasks involved in configuring both master and worker nodes.
+
+## Prerequisites
+
+Before using these scripts, ensure that you have the following:
+
+- A target environment with the desired master and worker nodes.
+- Ansible installed on the machine you'll be running the playbooks from.
+
+## Quick Setup
+
+### ON MASTER
+```
 curl https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/sh-scripts/master.sh | sudo bash
-
-*ON WORKER*
-
+```
+### ON WORKER
+```
 wget https://github.com/CPUtester5465/ansible-kubernetes-calico/blob/main/sh-scripts/worker.sh
 nano worker.sh
 #add master key 
 sudo bash worker.sh 
-
-#######################################
-
-*ON MASTER*
+```
+### ON MASTER
+```
 su ansible-control-panel
 cd
 cd ansible/
@@ -35,3 +46,7 @@ ansible-playbook master.yml
 ansible-playbook addkeys.yml
 #define master node IP
 ansible-playbook worker.yml
+```
+
+Disclaimer
+
