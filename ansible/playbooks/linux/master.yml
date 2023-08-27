@@ -1,0 +1,99 @@
+- hosts: master
+  become_user: kube-cluster
+  become: yes
+  vars:
+    user: kube-cluster
+  tasks:
+    - name: initialize the cluster (this could take some time)
+      command: sudo kubeadm init --pod-network-cidr=192.169.0.0/16
+      args:
+        creates: /etc/kubernetes/admin.conf
+
+    - name: create .kube directory
+      become: yes
+      file:
+        path: /home/{{ user }}/.kube
+        state: directory
+        mode: 0755
+
+    - name: Set write permissions for admin.conf
+      become: yes
+      become_user: root
+      file:
+        path: /etc/kubernetes/admin.conf
+        mode: "a+rw"
+
+    - name: copy admin.conf to user's kube config
+      become: yes
+      become_user: kube-cluster
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/{{ user }}/.kube/config
+        owner: "{{ user }}"
+
+    - name: Скачать конфигурационный файл
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/tigera-operator.yaml"
+        dest: "/home/{{ user }}/tigera-operator.yaml"
+
+    - name: Применить конфигурацию
+      shell: "kubectl create -f /home/{{ user }}/tigera-operator.yaml"
+      args:
+        executable: /bin/bash
+
+    - name: Скачать конфигурационный файл
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/calico-node/calico-node.yaml"
+        dest: "/home/{{ user }}/calico-node.yaml"
+
+    - name: Применить конфигурацию
+      shell: "kubectl create -f /home/{{ user }}/calico-node.yaml"
+      args:
+        executable: /bin/bash
+
+    - name: create repo directory
+      become_user: ansible-control-panel
+      file:
+        path: /home/ansible-control-panel/repo
+        state: directory
+
+    - name: Set write permissions for ansible-control-panel/repo
+      become: yes
+      become_user: root
+      file:
+        path: /home/ansible-control-panel/repo
+        mode: "a+rw"
+
+    - name: copy kube config to ubuntu git repo clone
+      become: yes
+      become_user: "{{ user }}"
+      copy:
+        src: /home/{{ user }}/.kube/config
+        dest: /home/ansible-control-panel/repo
+
+    - name: Get kubeadm token
+      become: yes
+      become_user: "{{ user }}"
+      command: kubeadm token create --print-join-command
+      register: join_command_output
+
+    - name: create kubeadmtoken directory
+      become_user: "{{ user }}"
+      become: yes
+      file:
+        path: /home/{{ user }}/kubeadmtoken/
+        state: directory
+
+    - name: Write join command to file
+      become: yes
+      become_user: "{{ user }}"
+      copy:
+        content: "{{ join_command_output.stdout }}"
+        dest: /home/{{ user }}/kubeadmtoken/kube-connect
+
+    - name: copy kubeadm token to ubuntu git repo clone
+      become: yes
+      become_user: "{{ user }}"
+      copy:
+        src: /home/{{ user }}/kubeadmtoken/kube-connect
+        dest: /home/ansible-control-panel/repo

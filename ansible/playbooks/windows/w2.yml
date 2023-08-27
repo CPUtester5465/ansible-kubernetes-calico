@@ -1,0 +1,59 @@
+- name: Install dependencies and configure Kubernetes on Windows Server #incase fatal w1 on install calico
+  hosts: windows_new_qa # connect gitrepo or transfer kubelet-secrvices.ps1 file to /home/ansible-control-panel/repo/
+  become_method: runas
+  gather_facts: false
+
+  tasks:
+    - name: Execute install-calico-windows.ps1
+      win_shell: |
+        Start-Transcript -Path 'C:\Users\Administrator\Desktop\install_calico.log'
+        c:\install-calico-windows.ps1 -KubeVersion 1.24.10 -Datastore kubernetes -ServiceCidr 10.96.0.0/16 -DNSServerIPs 10.96.0.10 -CalicoBackend vxlan
+      become: yes
+      become_user: Administrator
+      async: 0
+      poll: 0
+
+    - name: Ожидание 3 минут
+      pause:
+        minutes: 3
+
+    - name: PRINT ip variable
+      debug:
+        var: machine_address
+
+- name: Install dependencies and configure Kubernetes on Windows Server
+  hosts: windows_new_qa
+  become_method: runas
+  gather_facts: false
+
+  tasks:
+    - name: Вывод файла install_calico.log
+      win_shell: Get-Content -Path 'C:\Users\Administrator\Desktop\install_calico.log'
+      register: calico_log_output
+
+    - name: Вывод содержимого файла
+      debug:
+        var: calico_log_output.stdout_lines
+
+- name: Install and run kube scvs on Windows Server
+  hosts: windows_new_qa
+  gather_facts: false
+  vars:
+    ipmr: 172.31.29.214 #define ip master
+  tasks:
+    - name: del kubelet-service.ps1
+      win_file:
+        path: C:\CalicoWindows\kubernetes\kubelet-service.ps1
+        state: absent
+
+    - name: download kubelet-service
+      become_user: tim.derzhavets
+      become: yes
+      win_shell: |
+        scp -o StrictHostKeyChecking=no ansible-control-panel@{{  ipmr  }}:/home/ansible-control-panel/repo/kubelet-service.ps1 C:\CalicoWindows\kubernetes
+    #        scp -o StrictHostKeyChecking=no ansible-control-panel@{{  ipmr  }}: /home/ansible-control-panel/repo/ck8s-cluster-playbooks/kubecfg/kubelet-service.ps1 C:\CalicoWindows\kubernetes
+    - name: Install kubelet and kube-proxy
+      win_shell: |
+        C:\CalicoWindows\kubernetes\install-kube-services.ps1
+        Start-Service -Name kubelet
+        Start-Service -Name kube-proxy

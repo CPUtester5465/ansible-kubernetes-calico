@@ -1,0 +1,9 @@
+- hosts: master
+  become: yes
+  become_user: root
+  vars:
+    key: #<worker-key>
+  tasks:
+    - name: add keys
+      shell: |
+        sudo echo "{{ key }}" >> /home/ansible-control-panel/.ssh/authorized_keys

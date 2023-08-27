@@ -1,0 +1,131 @@
+- name: Install dependencies and configure Kubernetes on Windows Server
+  hosts: windows_new_qa
+  become_method: runas
+  gather_facts: false
+  vars:
+    ipmr: 172.31.29.214 #define ip master
+
+  tasks:
+    - name: set firewall and install contsiners
+      win_shell: |
+        Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled false
+        Get-NetFirewallProfile | select name, enabled
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Install-WindowsFeature Containers
+
+    - name: Taking IP
+      win_shell: |
+        $ipAddress = (Get-NetIPAddress | Where-Object {$_.InterfaceAlias -like "*Ethernet*" -and $_.AddressFamily -eq "IPv4"}).IPAddress
+        $formattedIpAddress = "ip-" + $ipAddress.Replace('.', '-')
+        Write-Output $formattedIpAddress
+      register: ip_address_output
+
+    - name: Formating IP
+      set_fact:
+        machine_address: "{{ ip_address_output.stdout | regex_replace('\r\n', '') | trim }}"
+
+    - name: PRINT ip variable
+      debug:
+        var: machine_address
+
+    - name: Rename machine
+      win_shell: |
+        Rename-Computer -NewName "{{ machine_address }}" -Force -PassThru (the problem is in plural ip adresses in 1 node)
+
+    - name: Reboot the machine
+      win_reboot:
+        reboot_timeout: 300
+        msg: "Rebooting the machine"
+
+    - name: download containerd
+      win_shell: |
+        Invoke-WebRequest https://docs.tigera.io/calico/3.25/scripts/Install-Containerd.ps1 -OutFile c:\Install-Containerd.ps1
+
+    - name: set variables
+      win_shell: |
+        [System.Environment]::SetEnvironmentVariable('CNI_BIN_DIR', 'c:\Program Files\containerd\cni\bin')
+        [System.Environment]::SetEnvironmentVariable('CNI_CONF_DIR', 'c:\Program Files\containerd\cni\conf')
+
+    - name: Install containerd
+      win_shell: |
+        c:\Install-Containerd.ps1 -ContainerDVersion 1.6.16 -CNIConfigPath "c:/Program Files/containerd/cni/conf" -CNIBinPath "c:/Program Files/containerd/cni/bin"
+        curl.exe -LO https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.26.0/crictl-v1.26.0-windows-amd64.tar.gz
+        tar xvf crictl-v1.26.0-windows-amd64.tar.gz
+
+    - name: move crictl.exe
+      win_copy:
+        src: C:\Users\Administrator\crictl.exe
+        dest: C:\Program Files\containerd\crictl.exe
+        remote_src: yes
+
+    - name: Create c:\k dir
+      win_file:
+        path: C:\k
+        state: directory
+
+    - name: download kubeconfig
+      win_shell: |
+        scp -o StrictHostKeyChecking=no ansible-control-panel@192.168.102.69:/home/ansible-control-panel/repo/config C:\Users\Administrator\repo
+
+    - name: Move kube config file
+      win_copy:
+        src: C:\Users\Administrator\repo\config
+        dest: C:\k
+        remote_src: yes
+
+    - name: download Calico
+      win_shell: |
+        curl.exe -LO https://github.com/projectcalico/calico/releases/download/v3.25.0/calicoctl-windows-amd64.exe
+        mv calicoctl-windows-amd64.exe C:\Windows\calicoctl.exe
+        Invoke-WebRequest https://github.com/projectcalico/calico/releases/download/v3.25.0/install-calico-windows.ps1 -OutFile c:\install-calico-windows.ps1
+
+    - name: Execute install-calico-windows.ps1
+      win_shell: |
+        Start-Transcript -Path 'C:\Users\Administrator\Desktop\install_calico.log'
+        c:\install-calico-windows.ps1 -KubeVersion 1.24.10 -Datastore kubernetes -ServiceCidr 10.96.0.0/16 -DNSServerIPs 10.96.0.10 -CalicoBackend vxlan
+      become: yes
+      become_user: Administrator
+      async: 0
+      poll: 0
+
+    - name: Ожидание 5 минут
+      pause:
+        minutes: 5
+
+    - name: PRINT ip variable
+      debug:
+        var: machine_address
+
+- name: Install dependencies and configure Kubernetes on Windows Server
+  hosts: windows_new_qa
+  become_method: runas
+  gather_facts: false
+
+  tasks:
+    - name: Вывод файла install_calico.log
+      win_shell: Get-Content -Path 'C:\Users\Administrator\Desktop\install_calico.log'
+      register: calico_log_output
+
+    - name: Вывод содержимого файла
+      debug:
+        var: calico_log_output.stdout_lines
+
+- name: Install and run kube scvs on Windows Server
+  hosts: windows_new_qa
+  gather_facts: false
+
+  tasks:
+    - name: del kubelet-service.ps1
+      win_file:
+        path: C:\CalicoWindows\kubernetes\kubelet-service.ps1
+        state: absent
+
+    - name: download kubelet-service
+      win_shell: |
+        scp -o StrictHostKeyChecking=no ansible-control-panel@{{  ipmr  }}:/home/ansible-control-panel/repo/kubelet-service.ps1 C:\CalicoWindows\kubernetes
+    #        scp -o StrictHostKeyChecking=no ubuntu@{{  ipmr  }}: /home/ansible-control-panel/repo/ck8s-cluster-playbooks/kubecfg/kubelet-service.ps1 C:\CalicoWindows\kubernetes
+    - name: Install kubelet and kube-proxy
+      win_shell: |
+        C:\CalicoWindows\kubernetes\install-kube-services.ps1
+        Start-Service -Name kubelet
+        Start-Service -Name kube-proxy

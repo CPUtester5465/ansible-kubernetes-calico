@@ -1,0 +1,25 @@
+- hosts: linux1, linux2
+  vars:
+    user: kube-cluster
+    ipmr: #ip master node
+
+  tasks:
+    - name: download kubeconfig
+      become_user: ansible
+      shell: |
+        scp -o StrictHostKeyChecking=no ansible-control-panel@{{ ipmr }}:/home/ansible-control-panel/repo/kube-connect /home/ansible/
+
+    - name: copy kube-connect file
+      become: yes
+      become_user: "{{ user }}"
+      copy:
+        src: /home/ansible/kube-connect
+        dest: /home/{{ user }}/
+        mode: u+x
+        remote_src: yes
+
+    - name: kube connect
+      become: yes
+      become_user: "{{ user }}"
+      shell: |
+        sudo /home/{{ user }}/kube-connect
