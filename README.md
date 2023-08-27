@@ -17,7 +17,7 @@ curl https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/m
 ```
 ### ON WORKER
 ```
-wget https://github.com/CPUtester5465/ansible-kubernetes-calico/blob/main/sh-scripts/worker.sh
+wget https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/sh-scripts/worker.sh
 nano worker.sh
 #add master key 
 sudo bash worker.sh 
