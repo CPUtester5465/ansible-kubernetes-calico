@@ -1,0 +1,18 @@
+[linux_new_qa]
+master ansible_connection=local #define user
+linux1 ansible_host=    
+
+[linux_new_qa:vars]
+ansible_user=ansible
+ansible_port=22
+
+
+[windows_new_qa]
+windows-node-01 ansible_host=
+
+[windows_new_qa:vars]
+ansible_user = ansible#
+ansible_password = #
+ansible_port = 5986
+ansible_connection = winrm
+ansible_winrm_server_cert_validation = ignore
