@@ -1,5 +1,5 @@
 sudo apt update
-sudo apt install software-properties-common
+sudo apt install software-properties-common --yes
 sudo apt-add-repository --yes --update ppa:ansible/ansible
 echo "15############################################################"
 sudo apt update
