@@ -1,0 +1,42 @@
+apiVersion: crd.projectcalico.org/v1
+kind: IPAMConfig
+metadata:
+  name: default
+spec:
+  autoAllocateBlocks: True
+  strictAffinity: True
+
+---
+
+# This section configures the Calico API server.
+apiVersion: operator.tigera.io/v1
+kind: APIServer
+metadata:
+  name: default
+spec: {}
+
+---
+
+apiVersion: operator.tigera.io/v1
+kind: Installation
+metadata:
+  name: default
+spec:
+  controlPlaneReplicas: 3
+  # Configures Calico networking.
+  calicoNetwork:
+    bgp: Disabled
+    # containerIPForwarding: Enabled uncomment if needed
+    # Note: The ipPools section cannot be modified post-install.
+    ipPools:
+    - blockSize: 24 # default block size of /26 contains 64 IP addresses, 4 are reserved for Windows, leaving 60 for pod networking
+      cidr: 192.169.0.0/16 # pod-network-cidr and kube-proxy clusterCIDR
+      encapsulation: VXLAN
+      natOutgoing: Enabled
+      nodeSelector: all()
+    # nodeAddressAutodetectionV4:
+    #   interface: eth.*,ens.*,vEthernet \(Ethernet\)
+    #   # cidrs: ["172.20.0.0/16"] 
+    #   # kubernetes: NodeInternalIP
+    #   # canReach: www.google.com
+
