@@ -13,7 +13,7 @@ sudo bash worker.sh
 #######################################
 
 *ON MASTER*
----
+[
 su ansible-control-panel
 cd
 cd ansible/
@@ -23,5 +23,5 @@ wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CP
 nano hosts.txt
 ansible all -m ping
 yes
-#ping:pong 
----
+#ping:pong
+]
