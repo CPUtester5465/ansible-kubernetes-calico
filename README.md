@@ -23,3 +23,8 @@ nano hosts.txt
 ansible all -m ping
 yes
 #ping:pong
+
+wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/linux/addkeys.yml
+wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/linux/kube-dependencies.yml
+wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/linux/master.yml
+wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/linux/worker.yml
