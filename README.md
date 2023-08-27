@@ -28,3 +28,10 @@ wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CP
 wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/linux/kube-dependencies.yml
 wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/linux/master.yml
 wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/linux/worker.yml
+
+ansible-playbook kube-dependencies.yml
+ansible-playbook master.yml
+#define keys at addkeys.yml
+ansible-playbook addkeys.yml
+#define master node IP
+ansible-playbook worker.yml
