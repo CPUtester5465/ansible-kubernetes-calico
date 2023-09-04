@@ -12,17 +12,22 @@ Before using these scripts, ensure that you have the following:
 ## Quick Setup
 
 ### ON MASTER
+
 ```
 curl https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/sh-scripts/master.sh | sudo bash
 ```
+
 ### ON WORKER
+
 ```
 wget https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/sh-scripts/worker.sh
 nano worker.sh
-#add master key 
-sudo bash worker.sh 
+#add master key
+sudo bash worker.sh
 ```
+
 ### ON MASTER
+
 ```
 su ansible-control-panel
 cd
@@ -48,5 +53,19 @@ ansible-playbook addkeys.yml
 ansible-playbook worker.yml
 ```
 
-Disclaimer
+ON WIN
 
+```
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/win.ps1" -OutFile "$env:TEMP\win.ps1"
+Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$env:TEMP\win.ps1`"" -Verb RunAs
+```
+
+ON MASTER
+
+```
+wget -P /home/ansible-control-panel/repo/ https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/kubelet-service.ps1
+wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/windows/w1.yml
+wget -P /home/ansible-control-panel/ansible https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ansible/playbooks/windows/w2.yml
+```
+
+Disclaimer
