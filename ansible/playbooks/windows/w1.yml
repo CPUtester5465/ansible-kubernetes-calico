@@ -123,7 +123,7 @@
     - name: download kubelet-service
       win_shell: |
         scp -o StrictHostKeyChecking=no ansible-control-panel@{{  ipmr  }}:/home/ansible-control-panel/repo/kubelet-service.ps1 C:\CalicoWindows\kubernetes
-    #        scp -o StrictHostKeyChecking=no ubuntu@{{  ipmr  }}: /home/ansible-control-panel/repo/ck8s-cluster-playbooks/kubecfg/kubelet-service.ps1 C:\CalicoWindows\kubernetes
+
     - name: Install kubelet and kube-proxy
       win_shell: |
         C:\CalicoWindows\kubernetes\install-kube-services.ps1
