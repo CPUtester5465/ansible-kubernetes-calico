@@ -3,7 +3,7 @@
   become_method: runas
   gather_facts: false
   vars:
-    ipmr: 172.31.29.214 #define ip master
+    ipmr: #define ip master
 
   tasks:
     - name: set firewall and install contsiners
@@ -54,7 +54,7 @@
 
     - name: move crictl.exe
       win_copy:
-        src: C:\Users\Administrator\crictl.exe
+        src: C:\Users\ansible\crictl.exe
         dest: C:\Program Files\containerd\crictl.exe
         remote_src: yes
 
@@ -65,11 +65,11 @@
 
     - name: download kubeconfig
       win_shell: |
-        scp -o StrictHostKeyChecking=no ansible-control-panel@192.168.102.69:/home/ansible-control-panel/repo/config C:\Users\Administrator\repo
+        scp -o StrictHostKeyChecking=no ansible-control-panel@{{ ipmr }}:/home/ansible-control-panel/repo/config C:\Users\ansible\repo
 
     - name: Move kube config file
       win_copy:
-        src: C:\Users\Administrator\repo\config
+        src: C:\Users\ansible\repo\config
         dest: C:\k
         remote_src: yes
 
@@ -81,10 +81,10 @@
 
     - name: Execute install-calico-windows.ps1
       win_shell: |
-        Start-Transcript -Path 'C:\Users\Administrator\Desktop\install_calico.log'
+        Start-Transcript -Path 'C:\Users\ansible\Desktop\install_calico.log'
         c:\install-calico-windows.ps1 -KubeVersion 1.24.10 -Datastore kubernetes -ServiceCidr 10.96.0.0/16 -DNSServerIPs 10.96.0.10 -CalicoBackend vxlan
       become: yes
-      become_user: Administrator
+      become_user: ansible
       async: 0
       poll: 0
 
@@ -103,7 +103,7 @@
 
   tasks:
     - name: Вывод файла install_calico.log
-      win_shell: Get-Content -Path 'C:\Users\Administrator\Desktop\install_calico.log'
+      win_shell: Get-Content -Path 'C:\Users\ansible\Desktop\install_calico.log'
       register: calico_log_output
 
     - name: Вывод содержимого файла

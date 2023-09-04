@@ -39,7 +39,7 @@
   hosts: windows_new_qa
   gather_facts: false
   vars:
-    ipmr: 172.31.29.214 #define ip master
+    ipmr: #define ip master
   tasks:
     - name: del kubelet-service.ps1
       win_file:
@@ -47,7 +47,7 @@
         state: absent
 
     - name: download kubelet-service
-      become_user: tim.derzhavets
+      become_user: ansible
       become: yes
       win_shell: |
         scp -o StrictHostKeyChecking=no ansible-control-panel@{{  ipmr  }}:/home/ansible-control-panel/repo/kubelet-service.ps1 C:\CalicoWindows\kubernetes
