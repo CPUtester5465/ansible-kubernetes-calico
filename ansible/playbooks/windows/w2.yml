@@ -9,7 +9,7 @@
         Start-Transcript -Path 'C:\Users\Administrator\Desktop\install_calico.log'
         c:\install-calico-windows.ps1 -KubeVersion 1.24.10 -Datastore kubernetes -ServiceCidr 10.96.0.0/16 -DNSServerIPs 10.96.0.10 -CalicoBackend vxlan
       become: yes
-      become_user: Administrator
+      become_user: ansilble
       async: 0
       poll: 0
 
