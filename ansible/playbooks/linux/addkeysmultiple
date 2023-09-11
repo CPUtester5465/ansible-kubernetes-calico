@@ -1,0 +1,33 @@
+- hosts: master
+  become: yes
+  become_user: root
+  vars:
+    worker_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDdHGH1iQ+JODwq8vP/UVlXrxjWln6eLnIXS/Wg+uM6elcCQyjkLEAYYhf2z5ZtJz572L186RqwC9/DAuQ7M8lRmz5ogejtiaYvp2/RUUA1T802BU2ECVkxZ5Zy2Gb1jyXJ7v0ok0mPifmpQyvZ6TpKNoa83P3ofFPxhcXZhlj33s88cnXuNMxx/8HmuLuWcSqjzTSdHUYal3LYT6nk+fgWxU0uhGVybrWp0VPq6MaQToVRXwmW3E6wLawzfxFm3M2Ck+RQM0DJjeX/J9lYHFp3WtzYJuwZ4SzXe3UenCXjNHPTs0Zz1V7QN3WcuQEh5dSLuqXrh9ffilBGAkGr6UBmrRqKBC2nBe50TzSAkVAoSZAj3QjbWHD/x31aMu4bqWhA9pFY/8ZtwZ/yom9GsFwu6A4eFT9E+GsN2ouPgG3Of74xR8OEUPE4OHx4MsboOYWVOEbihhbb7AH51JdNe8Fh+GdjLZcw4Gpbjs1alhWyWy2CF8CzhfUtOz8p3vlqJE8= ansible@node-01
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDOyQ8MqeCoYM1rTjso56+myd+lnjnRLXyDp0spJOHUv3uhQYfUkOIYoWjSV9DJio1Df1Cij4k2wtgNe2g3UgWWvvy+sAECgVqiTHejMrVM7RrILCkszp33bNWwFm5xf1Bt7c3m7bbTB3FrFKH6lS+TMaYoz1hA5RSuY+AwCM/5REnPKu7jWJsokah+TPEwvi0I+2vlKQPUXoOunHaYqsnXITR6k67zaj0thnfwHj95Y2Y87XV60wgGXyP5m4zgvnHeEN2SbsY8ZcILY7lPgzo0VPBKu1AQQiy7Kz5lKrA9v7NU8BkRhj949NJVRNjGHG95EbcsUCa5gmIVYERhvM3Oo5sYdY/Mdelp82ZgMTncpl5PLVNJAyg6Io0qPmqMeW0/dn2u485BV6yjCB9o0hveUJ0tQeFu0Uf2aHZ+D5i7jyYyt5bx4jZf6RjAguaMmb9sd7OZXjwM0nyWJQrGXND/H364G/edk+Py9UZ216j8+c5pGQhWtYY2Qc8WKWYU8cU= ansible@node-02
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDMDKSX9ePbE+m29ccRXlm/v+XfeorEERiyaLSk+6vPNQo+cyqTnRudppUzg0JGGO+d/MNa3kQg4ftXTrvdHluWrojAM2GRYfQoQW7J99Vwd7s8nYIZfOJj8530G5Zgo1bIjQ3wH6xA8Dm/S/fllL+wQkcrOtE4LNFCgN483ig6RyZviSHEGrMftySna2lClXxO59rhyb6yei21uyPJYeXtqctWVvzhHLAy/XWtICTMO60nVJlOXX6sxLLEGh8TOaeWBwBToEdzeRsWdxpMbl5xVBKk8c1Ve+EkTKR8ySHJQ+I8fbSSjfOyLeJAtMuHwbin5rVErRkPyQI52LfRSHTx2fEeE0a+EzgmI7LMWBvXFajmBtaKJvENNOlPNKyXnfLrsWgPBzArLi/NSW8mOSH6u7Q9G8oVhbfchYMedEe6Qm5Oa3Aj8qlxdpioOMK7JPUF15yq9IpVVRenUVDAjUVXpw/rV6qSX3ntwNyjSrzdNfhLDJYSY5IzfR2kkkrWr5E= ansible@WIN-K8MFCC2SKAR
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCc74nBaVC6kXCf4CRcYJBjdu/HaWw/PiJtluqwT3IiRtBD3T9hhnJ78ZG0Ds/QTIus4ELoqXOwcRVk5Tl8GhHgAqMKEiGhXogP0ceAvEFqPsQnpyBfMxNxkAuPlQRbkOuHm7wNX7Tuqv0C0dH2hmce0NPG6sThml9eU6yN022zJ11okG66RrVPO1ew9sXM5BtjhDoLOWU0DJKm5gJZYd+TWgWNKXM1TBaIxhdS+I/+A/cvN9WrMNX7kF3f8eITNVrT790ktc0xzbeEUb45OlDIBEPp1F+AEyePqWXNS3qAAiWpDiQWXNciEMIfUzopLgcYc9CyfUdV9aHUvjJe3otEVouv0k3qyvc7C9ed7a5IIkC0M25TJ96zyFHX2Brsmlh6TKRs+IjJl+O52yoB6YpI+/VC500C2xbOfwI2svB7WVYD/Bb7bkidYUw5+YHn0KL+MLIlNp9JA3hN3PNmU8xE+YSngjwFy5Y7xRScgtSL8RpnU0R2q459y+xo4GGLVlE= ansible@WIN-NLBEPNLOKH4
+  tasks:
+    - name: Create .ssh directory
+      file:
+        path: /home/ansible-control-panel/.ssh
+        state: directory
+        owner: ansible-control-panel
+        group: ansible-control-panel
+        mode: "0700"
+
+    - name: Create authorized_keys file
+      file:
+        path: /home/ansible-control-panel/.ssh/authorized_keys
+        state: touch
+        owner: ansible-control-panel
+        group: ansible-control-panel
+        mode: "0600"
+
+    - name: Add keys to authorized_keys file
+      lineinfile:
+        dest: /home/ansible-control-panel/.ssh/authorized_keys
+        line: "{{ item }}"
+        insertafter: EOF
+        state: present
+      loop: "{{ worker_keys }}"
