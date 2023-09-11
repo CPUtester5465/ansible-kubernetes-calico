@@ -1,5 +1,4 @@
 $Username = "ansible"
-$Password = ""
 
 Start-Transcript -Path "C:\Users\$Username\Desktop\init_ps.log"
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ansible/ansible/stable-2.10/examples/scripts/ConfigureRemotingForAnsible.ps1' -OutFile "C:\Users\$Username\Desktop\ConfigureRemotingForAnsible.ps1"
