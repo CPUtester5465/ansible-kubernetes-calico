@@ -56,7 +56,7 @@ ansible-playbook worker.yml
 ON WIN
 
 ```
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/win.ps1" -OutFile "$env:TEMP\win.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/CPUtester5465/ansible-kubernetes-calico/main/ps-scripts/win-init.ps1" -OutFile "$env:TEMP\win.ps1"
 Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$env:TEMP\win.ps1`"" -Verb RunAs
 ```
 
